@@ -1,0 +1,66 @@
+---
+title: "Courseproject Statistical Inference"
+author: "M"
+date: "22.01.2015"
+output: html_document
+---
+
+###Overview
+The aim of the following report is to analyse and illustrate the central limit theorem for the exponential distribution.
+
+The exponential distribution has the following probabilty density function (pdf)
+$$ f(x,\lambda) = \left\{
+  \begin{array}{l l}
+    \lambda e^{-\lambda x} & \quad \text{if $x \ge 0$ }\\
+    0 & \quad \text{if $x \lt 0$}
+  \end{array} \right.\ $$
+  
+and the following cumulative distribution function (cdf)
+
+$$ F(x,\lambda) = \left\{
+  \begin{array}{l l}
+    1- e^{-\lambda x} & \quad \text{if $x \ge 0$ }\\
+    0 & \quad \text{if $x \lt 0$}
+  \end{array} \right.\ $$
+
+
+
+The expected mean for the exponential distribution is
+
+$$ E \left[X \right] = \frac{1}{\lambda} $$
+
+
+and the expected variance
+
+$$ Var \left[X \right] = \frac{1}{\lambda^{2}} $$
+
+
+
+##Simulations
+In the simulations I set a seed allowing to reproduce the randomly generated numbers. As demanded in the
+courseproject outline the value $\lambda = 0.2$ and the number of randomly drawn observations for each of the $s=1000$ simulation runs should be $n=40$.
+
+Firstly I create a matrix $X$ with $n$ as the number of rows and $s$ as the number of columns. So all together $n*s$ exponential distribubted values are simulated with  `rexp(n, rate = 0.2)`, as we want the rate to be 0.2.
+
+Then it is possible to calculate the column means with `colMeans`, build the cumulative sum with `cumsum` and divide them by the vector that contains a sequence starting from one to the number of *simulation run*. This seems a bit awkward, but like this we not need to run a `for` loop, although there exists literature also on this taking a random draw once for many oberservations and in repeated loops, as the latter seems to be more better in sense of avoiding any additional bias through random number generation, although I decided now that this is fine for my report.
+
+```{r simulation, fig.heigt=5, fig.width=10}
+set.seed(111)
+rate <- 0.2
+n    <- 40
+s    <- 1000
+X = matrix(rexp(n*s, rate=rate), length(rexp(n)),s)
+mean <- cumsum(colMeans(X)) /(1:s)
+var <- cumsum(apply(X,2,sd)^2)/(1:s)
+par(mfrow=c(2,2))
+plot(mean, type="b", main="Simulated vs. theoretical mean", xlab="Number of simulations")
+abline(1/rate,0, col="red")
+text(400,0.5*(max(mean)+mean(mean)), paste("theoretic value at 1/lambda = ", 1/rate))
+hist(mean)
+plot(var, type="b", main="Simulated vs. theoretical variance", xlab="Number of simulations")
+abline(1/rate^2,0 ,col="red")
+text(400,0.5*(max(var)+mean(var)), paste("theoretic value at 1/lambda^2 = ", 1/rate^2))
+hist(var)
+```
+
+
