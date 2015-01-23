@@ -37,7 +37,7 @@ $$ Var \left[X \right] = \frac{1}{\lambda^{2}} $$
 
 
 ##Simulations
-In the simulations I set a seed allowing to reproduce the randomly generated numbers. As demanded in the
+In the simulations I `set.seed(111)` allowing to reproduce the randomly generated numbers. As demanded in the
 courseproject outline the value $\lambda = 0.2$ and the number of randomly drawn observations for each of the $s=1000$ simulation runs should be $n=40$.
 
 Firstly I create a matrix $X$ with $n$ as the number of rows and $s$ as the number of columns. So all together $n*s$ exponential distribubted values are simulated with  `rexp(n, rate = 0.2)`, as we want the rate to be 0.2.
@@ -61,6 +61,41 @@ plot(var, type="b", main="Simulated vs. theoretical variance", xlab="Number of s
 abline(1/rate^2,0 ,col="red")
 text(400,0.5*(max(var)+mean(var)), paste("theoretic value at 1/lambda^2 = ", 1/rate^2))
 hist(var)
+
 ```
 
+
+In the following figure we check the central limit theorem for the exponential distribution. For this we run three simulations. 1) with sample size `n =10` and `s=10` simulation runs. Then for the 2nd we multiply both by 10 also again for the third.
+In the figure we can see then how the shape of the distribution changes as we vary sample size and simulations. The centre of the distribution is more and more moving around the expected mean of the distribution $E\left[ X \right] = \frac{1}{\lambda} = \frac{1}{0.2} = 5$
+
+So we find a very bell shaped normal distribution of the sampled expected mean around its theoretical expected value. We conduct a `shapiro.test` to theck the normal distribution and we find that the hypothesis that the distribution is normal cannot be rejected, so we can assume that the samples of the simulated means follow a normal distribution.
+
+
+```{r distribution}
+set.seed(111)
+n <-10
+s<-10
+rate <-0.2
+
+X = matrix(rexp(n*s, rate=rate), length(rexp(n)),s)
+
+sim10 <- as.data.frame(colMeans(X))
+sim10$type <- "S10N10"
+n <-100;s=100
+X = matrix(rexp(n*s, rate=rate), length(rexp(n)),s)
+sim100 <- as.data.frame(colMeans(X))
+sim100$type <- "S100N100"
+n <-1000;s=1000
+X = matrix(rexp(n*s, rate=rate), length(rexp(n)),s)
+sim1000 <- as.data.frame(colMeans(X))
+sim1000$type <- "S1000N1000"
+
+sim_total <- rbind(sim10,sim100,sim1000)
+
+require(lattice)
+densityplot(~colMeans(X), groups=factor(type), data=sim_total, auto.key=TRUE, main="sample of mean for exponential distribution and lambda 0.2", xlab="", lwd=3)
+
+shapiro.test(sim1000$'colMeans(X)')
+
+```
 
