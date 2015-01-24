@@ -5,6 +5,8 @@ date: "22.01.2015"
 output: html_document
 ---
 
+##Exercise1
+
 ###Overview
 The aim of the following report is to analyse and illustrate the central limit theorem for the exponential distribution.
 
@@ -96,6 +98,26 @@ require(lattice)
 densityplot(~colMeans(X), groups=factor(type), data=sim_total, auto.key=TRUE, main="sample of mean for exponential distribution and lambda 0.2", xlab="", lwd=3)
 
 shapiro.test(sim1000$'colMeans(X)')
+
+```
+
+##Exercise 2
+
+###Overview
+The aim of this analysis is to show if there is a significant difference of two different delivery methods (orange juice or ascorbic acid) on the tooth growth. For this we use the dataset
+`ToothGrowth`, information on the dataset can be found `?ToothGrowth`
+
+In an aggregated summary and boxplot we can that on first impression the average growth is higher for the orange juice, but we also see that the for ascorbic acid the variation is much higher. 
+To get a clear answer if there is a difference between both supplements we conduct a `t.test` of the mean difference.
+The result of the double-sided `t.test` emphasizes that there is no significant difference between both delivery methods as we cannot reject the null hypothesis. When we draw a 95% confidence interval we can also see that zero is included in the interval, so it is not possible to find a difference that is significantly different from zero and as such there cannot be found a statistically difference in the delivery method on the tooth growth.
+
+```{r}
+data(ToothGrowth)
+aggregate(ToothGrowth$len, by=list(supp=ToothGrowth$supp), mean)
+boxplot(len~supp, data=ToothGrowth, col=c("red","blue"))
+
+t.test(len~supp, data=ToothGrowth, var.equal=FALSE)
+t.test(len~supp, data=ToothGrowth, var.equal=FALSE)$conf
 
 ```
 
